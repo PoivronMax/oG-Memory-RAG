@@ -122,7 +122,43 @@ Same server entry in the host's MCP config file:
 
 ---
 
-## Verify it can reach the server
+## Usage — how you actually query the KB
+
+**You don't run any command.** Once the MCP is installed in your host, just
+talk to your agent normally. The agent sees a `search_kb` tool and calls it on
+its own whenever your question looks like something the knowledge base can
+answer — then answers you using what it found. The "query" is phrased by the
+agent, not typed by you.
+
+```
+You:   "In Cangjie, how do I measure text width before drawing on a Canvas?"
+Agent: (decides the KB can help) → calls search_kb("Canvas measureText text width")
+       → gets the measureText signature back → writes the code for you.
+```
+
+Nothing to memorize, no special syntax — your normal chat is the interface.
+
+**Want to force it** (when the agent didn't search but you think it should)?
+Just say so in plain language:
+
+```
+"Search the KB for how to set a TextInput placeholder."
+"Check the knowledge base for Cangjie's match expression syntax first, then write it."
+"Use search_kb to look up AbilityStage lifecycle callbacks."
+```
+
+Any phrasing that mentions the KB / knowledge base / search_kb nudges the agent
+to call the tool. It's still natural language — you're just pointing at it.
+
+> This is an MCP **tool for the agent**, not a search box for you. There is no
+> UI; the chat window *is* the interface, and the agent decides when and what to
+> search. It won't query the KB for unrelated questions.
+
+## Verify the connection (one-time, optional)
+
+This is a **health probe you run once** to confirm the URL + token work — it is
+**not** how you query day-to-day (that's the Usage section above). You never
+need to type `OGMEM_...` on the command line again after this.
 
 ```bash
 OGMEM_API_URL=http://110.40.165.184:19532 OGMEM_API_TOKEN=<team-token> \
@@ -130,10 +166,10 @@ OGMEM_API_URL=http://110.40.165.184:19532 OGMEM_API_TOKEN=<team-token> \
 # -> {"base_url": "...", "account_id": "compatibility-sdk-5.1.1", "health": {"status": "ok", ...}}
 ```
 
-`status: ok` → ready. `403` → missing/wrong token. Connection error →
-`OGMEM_API_URL` unreachable (check the address / your network).
+`status: ok` → ready, go chat with your agent. `403` → missing/wrong token.
+Connection error → `OGMEM_API_URL` unreachable (check the address / your network).
 
-## The tool your agent gets
+## The tool the agent gets
 
 **`search_kb(query, top_k=8, snippet_chars=1500, min_score=None, categories=None)`**
 — searches the KB and returns ranked hits. Each hit carries `uri`
