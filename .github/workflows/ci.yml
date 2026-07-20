@@ -17,7 +17,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
-      - name: Install
-        run: uv pip install --system -e ".[dev]"
+      - name: Sync (isolated venv, no system Python)
+        run: uv sync --extra dev
       - name: Test
-        run: pytest -q
+        run: uv run pytest -q
